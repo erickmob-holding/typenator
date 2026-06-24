@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { makeLesson, resultsForLayout, Target } from "@/lesson";
-import { makeKeyStatsMap, Result, SpeedUnit, type TextType } from "@/result";
+import { makeKeyStatsMap, Result, type TextType } from "@/result";
 import { Attr, TextInput, type CodePoint } from "@/textinput";
 import { useProgress } from "@/app/ProgressContext.tsx";
 import { OnScreenKeyboard, type KeyHeat } from "./Keyboard.tsx";
+import { LessonHud } from "./LessonHud.tsx";
 import "./Practice.css";
 
 const TEXT_TYPE: Record<string, TextType> = {
@@ -17,7 +18,6 @@ const TEXT_TYPE: Record<string, TextType> = {
 
 export function Practice() {
   const { settings, results, keyboard, model, appendResult } = useProgress();
-  const speedUnit = SpeedUnit.fromId(settings.speedUnit);
 
   const [seed, setSeed] = useState(() => Date.now());
   const lesson = useMemo(
@@ -125,13 +125,7 @@ export function Practice() {
 
   return (
     <div className="practice">
-      <LiveBar
-        lastResult={lastResult}
-        invalid={invalid}
-        speedSuffix={speedUnit.suffix}
-        speedValue={lastResult ? Math.round(speedUnit.measure(lastResult.speed)) : null}
-        accuracy={lastResult ? Math.round(lastResult.accuracy * 100) : null}
-      />
+      <LessonHud lastResult={lastResult} invalid={invalid} />
 
       <div className="lesson-text" role="textbox" aria-label="Lesson text">
         {chars.map((ch, i) => (
@@ -167,36 +161,3 @@ export function Practice() {
   );
 }
 
-function LiveBar({
-  lastResult,
-  invalid,
-  speedValue,
-  speedSuffix,
-  accuracy,
-}: {
-  lastResult: Result | null;
-  invalid: boolean;
-  speedValue: number | null;
-  speedSuffix: string;
-  accuracy: number | null;
-}) {
-  return (
-    <div className="livebar">
-      <div className="livebar-metric">
-        <span className="livebar-value">{speedValue ?? "—"}</span>
-        <span className="livebar-label">{speedSuffix}</span>
-      </div>
-      <div className="livebar-metric">
-        <span className="livebar-value">{accuracy != null ? `${accuracy}%` : "—"}</span>
-        <span className="livebar-label">accuracy</span>
-      </div>
-      <div className="livebar-status">
-        {invalid
-          ? "Lesson too short to count — keep going."
-          : lastResult
-            ? "Saved · next lesson ready"
-            : "Type the text below to begin"}
-      </div>
-    </div>
-  );
-}
