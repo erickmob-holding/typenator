@@ -16,7 +16,8 @@ const TEXT_TYPE: Record<string, TextType> = {
 };
 
 export function Practice() {
-  const { settings, results, keyboard, model, appendResult } = useProgress();
+  const { settings, results, keyboard, model, appendResult, updateSettings } =
+    useProgress();
   const speedUnit = SpeedUnit.fromId(settings.speedUnit);
 
   const [seed, setSeed] = useState(() => Date.now());
@@ -52,9 +53,19 @@ export function Practice() {
       } else {
         setInvalid(true);
       }
+      // In books mode, walk forward through the text so the next lesson picks
+      // up where this one left off.
+      if (settings.lessonType === "books" && lesson.consumedWords) {
+        updateSettings({
+          books: {
+            ...settings.books,
+            position: settings.books.position + lesson.consumedWords,
+          },
+        });
+      }
       nextLesson();
     },
-    [appendResult, nextLesson],
+    [appendResult, nextLesson, settings, lesson.consumedWords, updateSettings],
   );
 
   // Keyboard capture.

@@ -1,5 +1,6 @@
 import { SpeedUnit } from "@/result";
 import { LAYOUTS } from "@/keyboard";
+import { BOOKS, SYNTAXES } from "@/lesson";
 import { type LessonType, type Settings as TSettings } from "@/settings";
 import { useProgress } from "@/app/ProgressContext.tsx";
 import "./Settings.css";
@@ -7,6 +8,8 @@ import "./Settings.css";
 const LESSON_TYPES: { id: LessonType; label: string }[] = [
   { id: "guided", label: "Guided (adaptive)" },
   { id: "wordlist", label: "Common words" },
+  { id: "books", label: "Books" },
+  { id: "code", label: "Code" },
   { id: "custom", label: "Custom text" },
   { id: "numbers", label: "Numbers" },
 ];
@@ -114,6 +117,72 @@ export function Settings() {
             format={(v) => `${Math.round(v * 100)}%`}
             onChange={(v) => set("guided", { ...settings.guided, alphabetSize: v })}
           />
+        </section>
+      )}
+
+      {settings.lessonType === "books" && (
+        <section className="card">
+          <h3>Books</h3>
+          <Field label="Book">
+            <select
+              value={settings.books.book}
+              onChange={(e) =>
+                set("books", {
+                  ...settings.books,
+                  book: e.target.value,
+                  position: 0,
+                })
+              }
+            >
+              {BOOKS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.title} — {b.author}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Toggle
+            label="Letters only"
+            hint="Strip punctuation and numbers from the text."
+            value={settings.books.lettersOnly}
+            onChange={(v) =>
+              set("books", { ...settings.books, lettersOnly: v, position: 0 })
+            }
+          />
+          <Toggle
+            label="Lowercase"
+            value={settings.books.lowercase}
+            onChange={(v) =>
+              set("books", { ...settings.books, lowercase: v, position: 0 })
+            }
+          />
+          <div className="field">
+            <button
+              className="btn"
+              onClick={() => set("books", { ...settings.books, position: 0 })}
+            >
+              Restart from the beginning
+            </button>
+          </div>
+        </section>
+      )}
+
+      {settings.lessonType === "code" && (
+        <section className="card">
+          <h3>Code</h3>
+          <Field label="Syntax">
+            <div className="seg">
+              {SYNTAXES.map((s) => (
+                <button
+                  key={s.id}
+                  className={`seg-btn ${settings.code.syntax === s.id ? "active" : ""}`}
+                  onClick={() => set("code", { syntax: s.id })}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </Field>
         </section>
       )}
 
