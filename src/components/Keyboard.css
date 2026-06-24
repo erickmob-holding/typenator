@@ -1,0 +1,49 @@
+.kbd {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  user-select: none;
+}
+
+.kbd-row {
+  display: flex;
+  gap: 6px;
+}
+
+.kbd-key {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-bg);
+  border: 1px solid var(--border);
+  border-bottom-width: 3px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-faint);
+  transition: transform 0.08s, background 0.15s, color 0.15s;
+}
+
+.kbd-key.is-included {
+  color: var(--text);
+  background: var(--key-included);
+}
+
+.kbd-key.is-focused {
+  background: var(--key-focus);
+  color: var(--text);
+}
+
+.kbd-key.is-next {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.kbd-space {
+  width: 16rem;
+}

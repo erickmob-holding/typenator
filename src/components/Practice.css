@@ -1,0 +1,92 @@
+.practice {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+  padding: 28px 0 40px;
+}
+
+.livebar {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  width: 100%;
+  max-width: 760px;
+  padding: 14px 20px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.livebar-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 70px;
+}
+.livebar-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.livebar-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+.livebar-status {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.lesson-text {
+  font-family: var(--font-mono);
+  font-size: 1.9rem;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  max-width: 760px;
+  width: 100%;
+  padding: 28px 30px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  word-break: break-word;
+}
+
+.ch-todo {
+  color: var(--text-faint);
+}
+.ch-hit {
+  color: var(--text);
+}
+.ch-miss {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 22%, transparent);
+  border-radius: 3px;
+}
+.ch-cursor {
+  color: var(--text-faint);
+  border-bottom: 3px solid var(--accent);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    border-bottom-color: transparent;
+  }
+}
+
+.hint {
+  font-size: 0.82rem;
+  margin: -6px 0 0;
+}
+.hint kbd {
+  font-family: var(--font-mono);
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.78rem;
+}

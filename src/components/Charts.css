@@ -1,0 +1,29 @@
+.chart {
+  width: 100%;
+  height: auto;
+}
+.chart-empty {
+  padding: 40px 0;
+  text-align: center;
+}
+.chart-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.chart-axis {
+  fill: var(--text-faint);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.chart-line {
+  fill: none;
+  stroke-width: 2;
+}
+.chart-trend {
+  fill: none;
+  stroke: var(--focus);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+  opacity: 0.85;
+}
