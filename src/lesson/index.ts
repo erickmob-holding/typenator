@@ -4,4 +4,6 @@ export * from "./guided.ts";
 export * from "./learningrate.ts";
 export * from "./dailygoal.ts";
 export * from "./textgen.ts";
+export * from "./books.ts";
+export * from "./code.ts";
 export * from "./lesson.ts";

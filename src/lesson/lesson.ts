@@ -5,12 +5,16 @@ import { type Settings } from "@/settings";
 import { updateGuided } from "./guided.ts";
 import { type LessonKeys } from "./lessonkey.ts";
 import { generateGuidedText, lessonLengthChars, wordStream } from "./textgen.ts";
+import { generateBooksText } from "./books.ts";
+import { generateCodeText } from "./code.ts";
 import { EN_WORDS } from "@/phonetic";
 
 export type GeneratedLesson = {
   readonly text: string;
   /** Present only for guided lessons. */
   readonly lessonKeys: LessonKeys | null;
+  /** For books mode: how many words were consumed, to advance the position. */
+  readonly consumedWords?: number;
 };
 
 /** Filters the result history down to the ones for the active layout. */
@@ -49,8 +53,16 @@ export function makeLesson(
       return { text: fromCustomText(settings, rng), lessonKeys: null };
     case "numbers":
       return { text: fromNumbers(settings, rng), lessonKeys: null };
+    case "books": {
+      const { text, consumedWords } = generateBooksText(
+        settings,
+        settings.books.position,
+      );
+      return { text, lessonKeys: null, consumedWords };
+    }
+    case "code":
+      return { text: generateCodeText(settings, rng), lessonKeys: null };
     default:
-      // books / code arrive in Phase 4; fall back to the word list for now.
       return { text: fromWordList(settings, rng), lessonKeys: null };
   }
 }

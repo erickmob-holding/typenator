@@ -43,6 +43,18 @@ export type Settings = {
     readonly lowercase: boolean;
     readonly randomize: boolean;
   };
+  readonly books: {
+    /** Id of the selected book. */
+    readonly book: string;
+    /** Running word position; advances as you type through the book. */
+    readonly position: number;
+    readonly lettersOnly: boolean;
+    readonly lowercase: boolean;
+  };
+  readonly code: {
+    /** Id of the selected programming syntax. */
+    readonly syntax: string;
+  };
 
   // --- Text shaping (apply across modes) ---
   /** Fraction of words that get a leading capital, 0..1. */
@@ -87,6 +99,8 @@ export const DEFAULT_SETTINGS: Settings = {
     lowercase: true,
     randomize: false,
   },
+  books: { book: "alice", position: 0, lettersOnly: false, lowercase: false },
+  code: { syntax: "javascript" },
   capitals: 0,
   punctuators: 0,
   repeatWords: 1,
@@ -114,6 +128,8 @@ export function mergeSettings(partial: unknown): Settings {
     wordList: { ...DEFAULT_SETTINGS.wordList, ...obj("wordList") },
     numbers: { ...DEFAULT_SETTINGS.numbers, ...obj("numbers") },
     customText: { ...DEFAULT_SETTINGS.customText, ...obj("customText") },
+    books: { ...DEFAULT_SETTINGS.books, ...obj("books") },
+    code: { ...DEFAULT_SETTINGS.code, ...obj("code") },
   } as Settings;
 }
 
