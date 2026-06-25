@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings 0",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "reset-user": "node scripts/reset-user-progress.mjs"
   },
   "overrides": {
     "vite": "^6.0.5"
