@@ -11,6 +11,9 @@ export type LessonType =
   | "code"
   | "numbers";
 
+/** Word source for guided lessons. */
+export type GuidedWordMode = "real" | "mixed";
+
 export type Settings = {
   /** Schema version, for forward migrations. */
   readonly version: number;
@@ -24,8 +27,8 @@ export type Settings = {
 
   // --- Guided mode (the adaptive algorithm) ---
   readonly guided: {
-    /** Mix real dictionary words in with the pseudo-words. */
-    readonly naturalWords: boolean;
+    /** "real" = dictionary words only, "mixed" = real words + pseudo-words. */
+    readonly wordMode: GuidedWordMode;
     /** Introduce letters in keyboard-row order instead of by frequency. */
     readonly keyboardOrder: boolean;
     /** 0 = smallest alphabet, 1 = include every letter. */
@@ -86,7 +89,7 @@ export const DEFAULT_SETTINGS: Settings = {
   layout: "us",
   lessonLength: 0,
   guided: {
-    naturalWords: true,
+    wordMode: "mixed",
     keyboardOrder: false,
     alphabetSize: 0,
     recoverKeys: false,
