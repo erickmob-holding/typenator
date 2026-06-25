@@ -7,13 +7,17 @@ export type KeyDef = {
   readonly codePoint: CodePoint;
   /** Row index, 0 = number row .. 4 = space row. */
   readonly row: number;
-  /** Horizontal offset within the row, in key units. */
-  readonly offset: number;
+  /** Which half of a split keyboard the key lives on. */
+  readonly hand: Hand;
+  /** Column within the hand, 0 = leftmost rendered column. */
+  readonly col: number;
   /** Which finger should press the key (for hints/coloring). */
   readonly finger: Finger;
   /** Home-row key (where fingers rest). */
   readonly home?: boolean;
 };
+
+export type Hand = "left" | "right" | "thumb";
 
 export type Finger =
   | "lPinky"

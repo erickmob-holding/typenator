@@ -1,39 +1,110 @@
 .kbd {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 14px;
   align-items: center;
   user-select: none;
 }
 
-.kbd-row {
+/* Two hands of a split keyboard, with a gap between them. */
+.kbd-split {
   display: flex;
-  gap: 6px;
+  gap: 3.5rem;
+}
+
+.kbd-hand {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* The right hand tilts the opposite way from the left. */
+.kbd-hand-left {
+  transform: rotate(-3deg);
+}
+.kbd-hand-right {
+  transform: rotate(3deg);
+}
+
+.kbd-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Column stagger: middle finger highest, then ring, index, pinky; the inner
+   reach columns drop lowest. Mirrors the finger lengths on a split keyboard. */
+.kbd-col[data-stagger="middle"] {
+  margin-top: 0;
+}
+.kbd-col[data-stagger="ring"] {
+  margin-top: 0.5rem;
+}
+.kbd-col[data-stagger="index"] {
+  margin-top: 0.85rem;
+}
+.kbd-col[data-stagger="pinky"] {
+  margin-top: 1.1rem;
+}
+.kbd-col[data-stagger="index-inner"] {
+  margin-top: 1.35rem;
 }
 
 .kbd-key {
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.7rem;
+  height: 2.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--key-bg);
-  border: 1px solid var(--border);
+  /* Resting tint shows the finger zone even before the key is practised. */
+  background: color-mix(in srgb, var(--key-finger) 16%, var(--key-bg));
+  border: 1px solid color-mix(in srgb, var(--key-finger) 35%, var(--border));
   border-bottom-width: 3px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 0.95rem;
-  color: var(--text-faint);
+  color: var(--text-dim);
   transition: transform 0.08s, background 0.15s, color 0.15s;
 }
 
+/* Per-finger colours (left/right mirrored). */
+.fg-pinky {
+  --key-finger: #4f9dff;
+}
+.fg-ring {
+  --key-finger: #36c98b;
+}
+.fg-middle {
+  --key-finger: #f0a93b;
+}
+.fg-index {
+  --key-finger: #f06a5b;
+}
+.fg-thumb {
+  --key-finger: var(--text-faint);
+}
+
+/* A small home-row bump on the index home keys (F / J). */
+.kbd-key.is-home {
+  position: relative;
+}
+.kbd-key.is-home::after {
+  content: "";
+  position: absolute;
+  bottom: 6px;
+  width: 0.7rem;
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--key-finger) 70%, var(--text-faint));
+}
+
 .kbd-key.is-included {
+  background: color-mix(in srgb, var(--key-finger) 36%, var(--key-bg));
   color: var(--text);
-  background: var(--key-included);
 }
 
 .kbd-key.is-focused {
-  background: var(--key-focus);
+  background: color-mix(in srgb, var(--key-finger) 55%, var(--key-bg));
   color: var(--text);
 }
 
@@ -42,6 +113,11 @@
   outline-offset: 1px;
   transform: translateY(-2px);
   color: #fff;
+}
+
+.kbd-thumbs {
+  display: flex;
+  justify-content: center;
 }
 
 .kbd-space {
