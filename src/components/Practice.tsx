@@ -5,6 +5,7 @@ import { Attr, TextInput, type CodePoint } from "@/textinput";
 import { useProgress } from "@/app/ProgressContext.tsx";
 import { OnScreenKeyboard, type KeyHeat } from "./Keyboard.tsx";
 import { LessonHud } from "./LessonHud.tsx";
+import { isEditableTarget } from "./dom.ts";
 import "./Practice.css";
 
 const TEXT_TYPE: Record<string, TextType> = {
@@ -72,6 +73,11 @@ export function Practice() {
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+      // Don't hijack typing when the user is in a form field (the sign-in
+      // modal, the custom-text box, etc.) — let those keys reach the field.
+      if (isEditableTarget(e.target) || isEditableTarget(document.activeElement)) {
         return;
       }
       const input = inputRef.current;
