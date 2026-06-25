@@ -36,14 +36,14 @@ describe("guided algorithm", () => {
     const included = keys.findIncludedKeys();
     expect(included).toHaveLength(6);
     expect(included.map((k) => k.char).sort()).toEqual(
-      ["e", "t", "a", "o", "i", "n"].sort(),
+      ["e", "n", "i", "t", "r", "l"].sort(),
     );
   });
 
   it("introduces a new letter only after the current set reaches target", () => {
     // Type the first 6 letters very fast (well above target) across enough
     // lessons that their smoothed time graduates them.
-    const letters = "etaoin";
+    const letters = "enitrl";
     const results: Result[] = [];
     for (let i = 0; i < 30; i++) {
       results.push(fastResult(letters, 100, Date.now() + i)); // 100ms/char => 600 CPM
@@ -57,15 +57,16 @@ describe("guided algorithm", () => {
   it("focuses the weakest included key", () => {
     const results: Result[] = [];
     for (let i = 0; i < 10; i++) {
-      // All six starting letters have data; 't' is the slowest of them.
+      // All six starting letters (keybr order: e n i t r l) have data;
+      // 't' is the slowest of them.
       results.push(
         new Result("us", "generated", Date.now() + i, 60, 4000, 0, new Histogram([
           { codePoint: cp("e"), hitCount: 10, missCount: 0, timeToType: 120 },
-          { codePoint: cp("t"), hitCount: 10, missCount: 0, timeToType: 900 },
-          { codePoint: cp("a"), hitCount: 10, missCount: 0, timeToType: 120 },
-          { codePoint: cp("o"), hitCount: 10, missCount: 0, timeToType: 130 },
+          { codePoint: cp("n"), hitCount: 10, missCount: 0, timeToType: 130 },
           { codePoint: cp("i"), hitCount: 10, missCount: 0, timeToType: 140 },
-          { codePoint: cp("n"), hitCount: 10, missCount: 0, timeToType: 150 },
+          { codePoint: cp("t"), hitCount: 10, missCount: 0, timeToType: 900 },
+          { codePoint: cp("r"), hitCount: 10, missCount: 0, timeToType: 120 },
+          { codePoint: cp("l"), hitCount: 10, missCount: 0, timeToType: 150 },
         ])),
       );
     }

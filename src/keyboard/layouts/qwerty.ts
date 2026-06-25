@@ -66,9 +66,10 @@ rows.forEach(({ indent, keys: rowKeys }, rowIndex) => {
   });
 });
 
-// English letters in descending frequency order; guided mode introduces them
-// left-to-right along this list.
-const frequencyOrder = "etaoinsrhldcumfpgwybvkxjqz"
+// Letter introduction order, matching keybr's English phonetic model. Guided
+// mode unlocks letters left-to-right along this list, and the "All keys" HUD
+// shows them in this order too (so it lines up with keybr).
+const frequencyOrder = "enitrlsauodychgmpbkvwfzxqj"
   .split("")
   .map((c) => c.codePointAt(0)!);
 

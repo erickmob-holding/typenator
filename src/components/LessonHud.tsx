@@ -69,25 +69,24 @@ export function LessonHud({
     [results, settings],
   );
 
-  // One view per letter, in alphabetical order for the strip.
+  // One view per letter, in keybr's frequency / unlock order (the order keys
+  // are introduced), which is exactly how keybr lays out its "All keys" strip.
   const keys = useMemo<KeyView[]>(() => {
     const included = new Set(
       lessonKeys.findIncludedKeys().map((k) => k.codePoint),
     );
     const focused = lessonKeys.findFocusedKey()?.codePoint ?? null;
-    return [...keyboard.letters]
-      .map((cp) => {
-        const stats = statsMap.get(cp);
-        return {
-          codePoint: cp,
-          char: String.fromCodePoint(cp).toUpperCase(),
-          confidence: target.confidence(stats.timeToType),
-          included: guided ? included.has(cp) : true,
-          focused: guided ? focused === cp : false,
-          hasData: stats.timeToType != null,
-        };
-      })
-      .sort((a, b) => a.char.localeCompare(b.char));
+    return [...keyboard.letters].map((cp) => {
+      const stats = statsMap.get(cp);
+      return {
+        codePoint: cp,
+        char: String.fromCodePoint(cp).toUpperCase(),
+        confidence: target.confidence(stats.timeToType),
+        included: guided ? included.has(cp) : true,
+        focused: guided ? focused === cp : false,
+        hasData: stats.timeToType != null,
+      };
+    });
   }, [keyboard, statsMap, lessonKeys, target, guided]);
 
   const [active, setActive] = useState<CodePoint | null>(null);
