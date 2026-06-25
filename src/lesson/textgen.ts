@@ -1,8 +1,12 @@
-import { type LetterFilter, type PhoneticModel, type RNG } from "@/phonetic";
+import { EN_WORDS, type LetterFilter, type PhoneticModel, type RNG } from "@/phonetic";
 import { type Settings } from "@/settings";
+import { type CodePoint } from "@/textinput";
 import { type LessonKeys } from "./lessonkey.ts";
 
 const PUNCTUATORS = [",", ".", ";", ":", "!", "?"];
+
+/** Share of words drawn from the dictionary when "Mix in real words" is on. */
+const NATURAL_WORD_RATIO = 0.5;
 
 /** Approximate character count for a lesson, scaled by the length setting. */
 export function lessonLengthChars(settings: Settings): number {
@@ -28,8 +32,40 @@ export function generateGuidedText(
   };
 
   const target = lessonLengthChars(settings);
-  const words = wordStream(() => model.word(filter, rng), settings, rng);
+  const words = wordStream(nextGuidedWord(model, filter, settings, rng), settings, rng);
   return assemble(words, target);
+}
+
+/**
+ * Picks the raw word source for a guided lesson. Both word modes draw on the
+ * dictionary words spellable from the included letters: "real" uses only those,
+ * "mixed" blends them with phonetic pseudo-words. When no real word can be
+ * formed yet (a tiny alphabet) we fall back to pseudo-words so generation never
+ * stalls.
+ */
+function nextGuidedWord(
+  model: PhoneticModel,
+  filter: LetterFilter,
+  settings: Settings,
+  rng: RNG,
+): () => string {
+  const pseudo = () => model.word(filter, rng);
+  const realWords = wordsFromLetters(filter.allowed);
+  if (realWords.length === 0) {
+    return pseudo;
+  }
+  const real = () => realWords[rng.int(realWords.length)];
+  if (settings.guided.wordMode === "real") {
+    return real;
+  }
+  return () => (rng.next() < NATURAL_WORD_RATIO ? real() : pseudo());
+}
+
+/** Dictionary words spellable using only the given letters. */
+function wordsFromLetters(allowed: ReadonlySet<CodePoint>): string[] {
+  return EN_WORDS.filter(
+    (w) => w.length >= 2 && [...w].every((c) => allowed.has(c.codePointAt(0)!)),
+  );
 }
 
 /** Shapes a raw word generator into capitalised / punctuated / repeated words. */

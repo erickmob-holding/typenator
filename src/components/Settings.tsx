@@ -2,9 +2,18 @@ import { useRef, useState } from "react";
 import { parseKeybrExport, type Result, SpeedUnit } from "@/result";
 import { LAYOUTS } from "@/keyboard";
 import { BOOKS, SYNTAXES } from "@/lesson";
-import { type LessonType, type Settings as TSettings } from "@/settings";
+import {
+  type GuidedWordMode,
+  type LessonType,
+  type Settings as TSettings,
+} from "@/settings";
 import { useProgress } from "@/app/ProgressContext.tsx";
 import "./Settings.css";
+
+const WORD_MODES: { id: GuidedWordMode; label: string }[] = [
+  { id: "real", label: "Real words only" },
+  { id: "mixed", label: "Real + pseudo" },
+];
 
 const LESSON_TYPES: { id: LessonType; label: string }[] = [
   { id: "guided", label: "Guided (adaptive)" },
@@ -92,12 +101,22 @@ export function Settings() {
       {settings.lessonType === "guided" && (
         <section className="card">
           <h3>Guided mode</h3>
-          <Toggle
-            label="Mix in real words"
-            hint="Blend dictionary words with the generated pseudo-words."
-            value={settings.guided.naturalWords}
-            onChange={(v) => set("guided", { ...settings.guided, naturalWords: v })}
-          />
+          <Field
+            label="Words"
+            hint="Real words only, or real words blended with generated pseudo-words."
+          >
+            <div className="seg">
+              {WORD_MODES.map((m) => (
+                <button
+                  key={m.id}
+                  className={`seg-btn ${settings.guided.wordMode === m.id ? "active" : ""}`}
+                  onClick={() => set("guided", { ...settings.guided, wordMode: m.id })}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </Field>
           <Toggle
             label="Keyboard-row order"
             hint="Introduce letters by keyboard position instead of by frequency."
@@ -437,11 +456,20 @@ function DataCard({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="field">
       <label>{label}</label>
       {children}
+      {hint && <div className="field-hint faint">{hint}</div>}
     </div>
   );
 }
