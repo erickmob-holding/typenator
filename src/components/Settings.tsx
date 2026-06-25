@@ -16,7 +16,8 @@ const LESSON_TYPES: { id: LessonType; label: string }[] = [
 ];
 
 export function Settings() {
-  const { settings, updateSettings, results, importResults } = useProgress();
+  const { settings, updateSettings, results, importResults, resetResults } =
+    useProgress();
   const unit = SpeedUnit.fromId(settings.speedUnit);
 
   const set = <K extends keyof TSettings>(key: K, value: TSettings[K]) =>
@@ -290,6 +291,7 @@ export function Settings() {
       <DataCard
         results={results}
         importResults={importResults}
+        resetResults={resetResults}
       />
     </div>
   );
@@ -298,13 +300,31 @@ export function Settings() {
 function DataCard({
   results,
   importResults,
+  resetResults,
 }: {
   results: readonly Result[];
   importResults: (r: readonly Result[]) => Promise<number>;
+  resetResults: () => Promise<void>;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  async function onReset() {
+    setResetting(true);
+    setStatus(null);
+    try {
+      await resetResults();
+      setStatus({ ok: true, text: "Progress reset. Your settings were kept." });
+    } catch {
+      setStatus({ ok: false, text: "Could not reset your progress." });
+    } finally {
+      setResetting(false);
+      setConfirming(false);
+    }
+  }
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -381,6 +401,35 @@ function DataCard({
           onChange={onFile}
         />
       </div>
+
+      <div className="data-reset">
+        {confirming ? (
+          <div className="data-confirm">
+            <span className="muted">
+              Delete all {results.length} lessons? This can't be undone.
+            </span>
+            <button className="btn btn-danger" disabled={resetting} onClick={onReset}>
+              {resetting ? "Resetting…" : "Yes, reset progress"}
+            </button>
+            <button
+              className="btn"
+              disabled={resetting}
+              onClick={() => setConfirming(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            className="btn btn-danger-ghost"
+            disabled={results.length === 0}
+            onClick={() => setConfirming(true)}
+          >
+            Reset my progress
+          </button>
+        )}
+      </div>
+
       {status && (
         <p className={`data-status ${status.ok ? "ok" : "err"}`}>{status.text}</p>
       )}

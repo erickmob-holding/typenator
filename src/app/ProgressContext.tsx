@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/firebase/auth.tsx";
 import {
   clearLocalResults,
+  deleteAllRemoteResults,
   loadLocalResults,
   loadRemoteResults,
   loadRemoteSettings,
@@ -38,6 +39,8 @@ type ProgressState = {
   appendResult(result: Result): void;
   /** Bulk-imports results (e.g. a keybr export), de-duplicated. Returns how many were added. */
   importResults(incoming: readonly Result[]): Promise<number>;
+  /** Deletes all of the current user's typing results. Settings are kept. */
+  resetResults(): Promise<void>;
 };
 
 const ProgressContext = createContext<ProgressState | null>(null);
@@ -154,6 +157,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [results],
   );
 
+  const resetResults = useCallback(async (): Promise<void> => {
+    if (uidRef.current) {
+      await deleteAllRemoteResults(uidRef.current);
+    } else {
+      clearLocalResults();
+    }
+    setResults([]);
+  }, []);
+
   const value = useMemo<ProgressState>(
     () => ({
       settings,
@@ -164,6 +176,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       updateSettings,
       appendResult,
       importResults,
+      resetResults,
     }),
     [
       settings,
@@ -174,6 +187,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       updateSettings,
       appendResult,
       importResults,
+      resetResults,
     ],
   );
 

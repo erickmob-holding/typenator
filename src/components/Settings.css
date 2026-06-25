@@ -119,3 +119,33 @@
 .data-status.err {
   color: var(--bad);
 }
+
+.data-reset {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.data-confirm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.86rem;
+}
+.btn-danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #fff;
+}
+.btn-danger:hover {
+  filter: brightness(1.08);
+  background: var(--bad);
+}
+.btn-danger-ghost {
+  background: transparent;
+  border-color: var(--bad);
+  color: var(--bad);
+}
+.btn-danger-ghost:hover {
+  background: color-mix(in srgb, var(--bad) 14%, transparent);
+}

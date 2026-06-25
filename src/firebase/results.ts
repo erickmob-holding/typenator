@@ -68,6 +68,24 @@ export async function saveRemoteResult(uid: string, result: Result): Promise<voi
   );
 }
 
+/** Deletes every result for a user, keeping their settings doc intact. */
+export async function deleteAllRemoteResults(uid: string): Promise<void> {
+  const snap = await getDocs(collection(db, "users", uid, "results"));
+  let batch = writeBatch(db);
+  let count = 0;
+  for (const d of snap.docs) {
+    batch.delete(d.ref);
+    if (++count === 400) {
+      await batch.commit();
+      batch = writeBatch(db);
+      count = 0;
+    }
+  }
+  if (count > 0) {
+    await batch.commit();
+  }
+}
+
 /** Uploads any local guest results into the account, de-duplicated by id. */
 export async function mergeGuestResults(
   uid: string,
