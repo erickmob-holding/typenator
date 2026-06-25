@@ -1,4 +1,5 @@
-import { SpeedUnit } from "@/result";
+import { useRef, useState } from "react";
+import { parseKeybrExport, type Result, SpeedUnit } from "@/result";
 import { LAYOUTS } from "@/keyboard";
 import { BOOKS, SYNTAXES } from "@/lesson";
 import { type LessonType, type Settings as TSettings } from "@/settings";
@@ -15,7 +16,7 @@ const LESSON_TYPES: { id: LessonType; label: string }[] = [
 ];
 
 export function Settings() {
-  const { settings, updateSettings } = useProgress();
+  const { settings, updateSettings, results, importResults } = useProgress();
   const unit = SpeedUnit.fromId(settings.speedUnit);
 
   const set = <K extends keyof TSettings>(key: K, value: TSettings[K]) =>
@@ -285,7 +286,105 @@ export function Settings() {
           onChange={(v) => set("highlightKey", v)}
         />
       </section>
+
+      <DataCard
+        results={results}
+        importResults={importResults}
+      />
     </div>
+  );
+}
+
+function DataCard({
+  results,
+  importResults,
+}: {
+  results: readonly Result[];
+  importResults: (r: readonly Result[]) => Promise<number>;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-importing the same file
+    if (!file) {
+      return;
+    }
+    setBusy(true);
+    setStatus(null);
+    try {
+      const text = await file.text();
+      const summary = parseKeybrExport(text);
+      if (summary.error) {
+        setStatus({ ok: false, text: summary.error });
+        return;
+      }
+      const added = await importResults(summary.results);
+      const skippedNote = summary.skipped ? `, ${summary.skipped} skipped` : "";
+      const dupNote =
+        added < summary.imported
+          ? ` (${summary.imported - added} already imported)`
+          : "";
+      setStatus({
+        ok: true,
+        text: `Imported ${added} of ${summary.imported} lessons${dupNote}${skippedNote}. Your stats are updated.`,
+      });
+    } catch {
+      setStatus({ ok: false, text: "Could not read that file." });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function onExport() {
+    const json = JSON.stringify(
+      results.map((r) => r.toJSON()),
+      null,
+      0,
+    );
+    const url = URL.createObjectURL(
+      new Blob([json], { type: "application/json" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "typenator-data.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <section className="card">
+      <h3>Data</h3>
+      <p className="muted data-hint">
+        Import your progress from keybr. On keybr, open your account and choose
+        “Export data” to download a JSON file, then load it here — your full
+        per-key history is reconstructed.
+      </p>
+      <div className="data-actions">
+        <button
+          className="btn btn-primary"
+          disabled={busy}
+          onClick={() => fileRef.current?.click()}
+        >
+          {busy ? "Importing…" : "Import from keybr (JSON)"}
+        </button>
+        <button className="btn" onClick={onExport} disabled={results.length === 0}>
+          Export my data
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          hidden
+          onChange={onFile}
+        />
+      </div>
+      {status && (
+        <p className={`data-status ${status.ok ? "ok" : "err"}`}>{status.text}</p>
+      )}
+    </section>
   );
 }
 

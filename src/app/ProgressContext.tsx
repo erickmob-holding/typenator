@@ -36,6 +36,8 @@ type ProgressState = {
   readonly syncing: boolean;
   updateSettings(patch: Partial<Settings>): void;
   appendResult(result: Result): void;
+  /** Bulk-imports results (e.g. a keybr export), de-duplicated. Returns how many were added. */
+  importResults(incoming: readonly Result[]): Promise<number>;
 };
 
 const ProgressContext = createContext<ProgressState | null>(null);
@@ -130,6 +132,28 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const importResults = useCallback(
+    async (incoming: readonly Result[]): Promise<number> => {
+      const keyOf = (r: Result) => `${r.timeStamp}_${r.layout}_${r.length}`;
+      const existing = new Set(results.map(keyOf));
+      const fresh = incoming.filter((r) => !existing.has(keyOf(r)));
+      if (fresh.length === 0) {
+        return 0;
+      }
+      const merged = [...results, ...fresh].sort(
+        (a, b) => a.timeStamp - b.timeStamp,
+      );
+      if (uidRef.current) {
+        await mergeGuestResults(uidRef.current, fresh);
+      } else {
+        saveLocalResults(merged);
+      }
+      setResults(merged);
+      return fresh.length;
+    },
+    [results],
+  );
+
   const value = useMemo<ProgressState>(
     () => ({
       settings,
@@ -139,8 +163,18 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       syncing,
       updateSettings,
       appendResult,
+      importResults,
     }),
-    [settings, results, keyboard, model, syncing, updateSettings, appendResult],
+    [
+      settings,
+      results,
+      keyboard,
+      model,
+      syncing,
+      updateSettings,
+      appendResult,
+      importResults,
+    ],
   );
 
   return (
