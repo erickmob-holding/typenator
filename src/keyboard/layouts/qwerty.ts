@@ -2,64 +2,60 @@ import { type Finger, type KeyDef, type Layout } from "../keyboard.ts";
 
 type Spec = [char: string, finger: Finger, home?: boolean];
 
-// Each row lists keys left-to-right; offset is the cumulative key-unit position
-// including the standard staggered row indents.
-const rows: { indent: number; keys: Spec[] }[] = [
-  {
-    indent: 0,
-    keys: [
-      ["q", "lPinky"],
-      ["w", "lRing"],
-      ["e", "lMiddle"],
-      ["r", "lIndex"],
-      ["t", "lIndex"],
-      ["y", "rIndex"],
-      ["u", "rIndex"],
-      ["i", "rMiddle"],
-      ["o", "rRing"],
-      ["p", "rPinky"],
-    ],
-  },
-  {
-    indent: 0.25,
-    keys: [
-      ["a", "lPinky", true],
-      ["s", "lRing", true],
-      ["d", "lMiddle", true],
-      ["f", "lIndex", true],
-      ["g", "lIndex"],
-      ["h", "rIndex"],
-      ["j", "rIndex", true],
-      ["k", "rMiddle", true],
-      ["l", "rRing", true],
-      [";", "rPinky", true],
-    ],
-  },
-  {
-    indent: 0.75,
-    keys: [
-      ["z", "lPinky"],
-      ["x", "lRing"],
-      ["c", "lMiddle"],
-      ["v", "lIndex"],
-      ["b", "lIndex"],
-      ["n", "rIndex"],
-      ["m", "rIndex"],
-      [",", "rMiddle"],
-      [".", "rRing"],
-      ["/", "rPinky"],
-    ],
-  },
+// Each row lists keys left-to-right. The first five belong to the left hand and
+// the last five to the right hand of a split keyboard; the column index within
+// the hand drives the on-screen column-staggered layout.
+const rows: Spec[][] = [
+  [
+    ["q", "lPinky"],
+    ["w", "lRing"],
+    ["e", "lMiddle"],
+    ["r", "lIndex"],
+    ["t", "lIndex"],
+    ["y", "rIndex"],
+    ["u", "rIndex"],
+    ["i", "rMiddle"],
+    ["o", "rRing"],
+    ["p", "rPinky"],
+  ],
+  [
+    ["a", "lPinky", true],
+    ["s", "lRing", true],
+    ["d", "lMiddle", true],
+    ["f", "lIndex", true],
+    ["g", "lIndex"],
+    ["h", "rIndex"],
+    ["j", "rIndex", true],
+    ["k", "rMiddle", true],
+    ["l", "rRing", true],
+    [";", "rPinky", true],
+  ],
+  [
+    ["z", "lPinky"],
+    ["x", "lRing"],
+    ["c", "lMiddle"],
+    ["v", "lIndex"],
+    ["b", "lIndex"],
+    ["n", "rIndex"],
+    ["m", "rIndex"],
+    [",", "rMiddle"],
+    [".", "rRing"],
+    ["/", "rPinky"],
+  ],
 ];
 
+const HALF = 5; // keys per hand in each row
+
 const keys: KeyDef[] = [];
-rows.forEach(({ indent, keys: rowKeys }, rowIndex) => {
+rows.forEach((rowKeys, rowIndex) => {
   rowKeys.forEach(([char, finger, home], i) => {
+    const left = i < HALF;
     keys.push({
       char,
       codePoint: char.codePointAt(0)!,
       row: rowIndex + 1, // row 0 reserved for the (omitted) number row
-      offset: indent + i,
+      hand: left ? "left" : "right",
+      col: left ? i : i - HALF,
       finger,
       home,
     });
