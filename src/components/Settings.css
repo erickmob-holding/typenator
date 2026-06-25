@@ -98,3 +98,24 @@
 .switch.on .knob {
   transform: translateX(18px);
 }
+
+.data-hint {
+  margin: 0 0 14px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.data-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.data-status {
+  margin: 12px 0 0;
+  font-size: 0.86rem;
+}
+.data-status.ok {
+  color: var(--good);
+}
+.data-status.err {
+  color: var(--bad);
+}
