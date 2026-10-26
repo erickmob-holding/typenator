@@ -3,12 +3,11 @@ import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 import { copyFileSync, existsSync } from "node:fs";
 
-// Project pages are served from https://<owner>.github.io/typenator/, so the
-// production build must be rooted at that subpath. Dev stays at "/".
-const BASE = "/typenator/";
+// Served from the custom domain https://typenator.erickmob.dev, so the build is
+// rooted at "/" (the default base) in dev and production.
 
 /**
- * GitHub Pages has no SPA rewrite rule, so a deep link like /typenator/progress
+ * GitHub Pages has no SPA rewrite rule, so a deep link like /progress
  * returns the host's 404 page. Shipping a 404.html that is a copy of index.html
  * lets the app boot on any route; React Router (with the matching basename)
  * then renders the correct view.
@@ -27,8 +26,7 @@ function spaFallback(): Plugin {
   };
 }
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? BASE : "/",
+export default defineConfig(() => ({
   plugins: [react(), spaFallback()],
   resolve: {
     alias: {

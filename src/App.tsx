@@ -7,8 +7,8 @@ import { Profile } from "@/components/Profile.tsx";
 import { Settings } from "@/components/Settings.tsx";
 import "@/styles/global.css";
 
-// Vite injects BASE_URL ("/typenator/" in production, "/" in dev). React Router
-// wants the basename without a trailing slash.
+// Vite injects BASE_URL ("/" with the custom domain). React Router wants the
+// basename without a trailing slash.
 const basename = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export default function App() {
